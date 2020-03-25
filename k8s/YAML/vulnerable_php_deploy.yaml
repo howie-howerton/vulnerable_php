@@ -1,0 +1,42 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vulnerable-php
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vulnerable-php
+  template:
+    metadata:
+      labels:
+        app:  vulnerable-php
+    spec:
+      containers:
+      - name: php
+        image: howiehowerton/vulnerable_php
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vulnerable-php-svc
+  labels:
+    app: vulnerable-php
+spec:
+  #type: ClusterIP
+  #type: NodePort
+  type: LoadBalancer
+  ports:
+  - port: 80
+    #nodePort: 30080
+    protocol: TCP
+    targetPort: 80  
+  selector:
+    app: vulnerable-php
+##############
+# Get the IP of the LoadBalancer with:  kubectl describe services vulnerable-php-svc
+##############
+...
